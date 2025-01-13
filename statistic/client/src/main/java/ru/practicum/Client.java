@@ -1,0 +1,39 @@
+package ru.practicum;
+
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
+import ru.practicum.dto.EndpointHitDto;
+
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Map;
+
+
+@Service
+public class Client extends BaseClient {
+    public Client(RestTemplate rest) {
+        super(rest);
+    }
+
+    public ResponseEntity<Object> getStat(LocalDateTime start, LocalDateTime end, List<String> uris, Boolean unique) {
+        Map<String, Object> parameters = Map.of(
+                "start", start,
+                "end", end,
+                "uris", uris,
+                "unique", unique
+        );
+        return get("/stats?start={start}&end={end}&uris={uris}&unique={unique}", parameters);
+    }
+
+    public ResponseEntity<Object> saveStats(String app, String uris, String ip, LocalDateTime timeStamp) {
+        EndpointHitDto hitDto = new EndpointHitDto(
+                null,
+                app,
+                uris,
+                ip,
+                timeStamp
+        );
+        return post("/hit", hitDto);
+    }
+}
