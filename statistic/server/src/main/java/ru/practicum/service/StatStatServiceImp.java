@@ -9,6 +9,7 @@ import ru.practicum.mapper.HitMapper;
 import ru.practicum.repository.StatRepository;
 
 import java.time.LocalDateTime;
+import java.util.Comparator;
 import java.util.List;
 
 @Slf4j
@@ -33,6 +34,7 @@ public class StatStatServiceImp implements StatService {
         } else {
             stats = repository.findStats(start, end);
         }
+        stats.sort(Comparator.reverseOrder());
         return stats;
     }
 

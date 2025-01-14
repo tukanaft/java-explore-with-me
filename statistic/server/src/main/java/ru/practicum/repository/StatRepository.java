@@ -19,7 +19,7 @@ public interface StatRepository extends JpaRepository<EndpointHit, Integer> {
 
     @Query("SELECT new ru.practicum.dto.ViewStatsDto(e.app, e.uri, COUNT(DISTINCT e.ip)) from EndpointHit e " +
             " Where e.timestamp Between ?1 and ?2" +
-            " Group By e.app,e.uri " +
+            " Group By e.app,e.uri" +
             " Order By COUNT(DISTINCT e.ip) DESC")
     List<ViewStatsDto> findStatsUnique(LocalDateTime start, LocalDateTime end);
 
