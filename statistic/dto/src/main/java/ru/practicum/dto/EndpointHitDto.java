@@ -1,5 +1,6 @@
 package ru.practicum.dto;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -12,7 +13,8 @@ public class EndpointHitDto {
     String app;
     String uri;
     String ip;
-    LocalDateTime timestamp;
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", shape = JsonFormat.Shape.STRING)
+    LocalDateTime timestamp ;
 
     public EndpointHitDto(Integer id, String app, String uri, String ip, LocalDateTime timestamp) {
         this.id = id;
