@@ -17,6 +17,7 @@ public class Client extends BaseClient {
     }
 
     public ResponseEntity<Object> getStat(LocalDateTime start, LocalDateTime end, List<String> uris, Boolean unique) {
+
         Map<String, Object> parameters = Map.of(
                 "start", start,
                 "end", end,
