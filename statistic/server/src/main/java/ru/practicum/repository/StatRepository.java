@@ -13,23 +13,27 @@ public interface StatRepository extends JpaRepository<EndpointHit, Integer> {
 
     @Query("SELECT new ru.practicum.dto.ViewStatsDto(e.app, e.uri, COUNT(e.ip)) from EndpointHit e " +
             " Where e.timestamp Between ?1 and ?2" +
-            " Group By e.app,e.uri")
+            " Group By e.app,e.uri" +
+            " Order By COUNT(DISTINCT e.ip) DESC")
     List<ViewStatsDto> findStats(LocalDateTime start, LocalDateTime end);
 
     @Query("SELECT new ru.practicum.dto.ViewStatsDto(e.app, e.uri, COUNT(DISTINCT e.ip)) from EndpointHit e " +
             " Where e.timestamp Between ?1 and ?2" +
-            " Group By e.app,e.uri")
+            " Group By e.app,e.uri " +
+            " Order By COUNT(DISTINCT e.ip) DESC")
     List<ViewStatsDto> findStatsUnique(LocalDateTime start, LocalDateTime end);
 
     @Query("SELECT new ru.practicum.dto.ViewStatsDto(e.app, e.uri, COUNT(e.ip)) from EndpointHit e " +
             " Where e.timestamp Between ?1 and ?2" +
             " And e.uri in ?3" +
-            " Group By e.app,e.uri")
+            " Group By e.app,e.uri" +
+            " Order By COUNT(DISTINCT e.ip) DESC")
     List<ViewStatsDto> findStatsWithUri(LocalDateTime start, LocalDateTime end, List<String> uris);
 
     @Query("SELECT new ru.practicum.dto.ViewStatsDto(e.app, e.uri,COUNT(DISTINCT e.ip )) from EndpointHit e " +
             " Where e.timestamp Between ?1 and ?2" +
             " And e.uri in ?3" +
-            " Group By e.app,e.uri")
+            " Group By e.app,e.uri" +
+            " Order By COUNT(DISTINCT e.ip) DESC")
     List<ViewStatsDto> findStatsWithUriUnique(LocalDateTime start, LocalDateTime end, List<String> uris);
 }
