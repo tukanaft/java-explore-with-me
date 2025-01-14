@@ -14,7 +14,7 @@ public class EndpointHitDto {
     String uri;
     String ip;
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", shape = JsonFormat.Shape.STRING)
-    LocalDateTime timestamp ;
+    LocalDateTime timestamp;
 
     public EndpointHitDto(Integer id, String app, String uri, String ip, LocalDateTime timestamp) {
         this.id = id;
