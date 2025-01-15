@@ -1,14 +1,26 @@
 services:
   stats-server:
+    build: statistic/server
     ports:
       - "9090:9090"
+    depends_on:
+      - stats-db
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://stats-db:5432/stats-db
+      - SPRING_DATASOURCE_USERNAME=postgres
+      - SPRING_DATASOURCE_PASSWORD=12345
 
   stats-db:
     image: postgres:16.1
+    ports:
+      - "6541:5432"
+    environment:
+      - POSTGRES_DB=stats-db
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=12345
 
   ewm-service:
+    build: ewm-service
     ports:
       - "8080:8080"
 
-  ewm-db:
-    image: postgres:16.1
