@@ -19,7 +19,7 @@ public class Compilation {
     Integer id;
 
     @ManyToMany
-    @JoinTable(name = "compilations_events", joinColumns = @JoinColumn (name = "compilation_id"),
+    @JoinTable(name = "compilations_events", joinColumns = @JoinColumn(name = "compilation_id"),
             inverseJoinColumns = @JoinColumn(name = "event_id"))
     List<Event> events;
 

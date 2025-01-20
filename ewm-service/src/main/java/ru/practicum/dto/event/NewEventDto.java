@@ -4,9 +4,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import ru.practicum.model.event.State;
 import ru.practicum.model.location.Location;
-import ru.practicum.model.users.User;
 
 import java.time.LocalDateTime;
 

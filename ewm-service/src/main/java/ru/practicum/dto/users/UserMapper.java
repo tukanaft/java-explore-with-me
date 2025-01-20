@@ -39,7 +39,7 @@ public class UserMapper {
         return usersDto;
     }
 
-    public UserShortDto toUserShortDto(User user){
+    public UserShortDto toUserShortDto(User user) {
         return new UserShortDto(
                 user.getId(),
                 user.getName()

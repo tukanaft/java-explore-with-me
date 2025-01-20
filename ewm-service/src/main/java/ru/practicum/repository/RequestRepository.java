@@ -15,7 +15,7 @@ public interface RequestRepository extends JpaRepository<ParticipationRequest, I
 
     List<ParticipationRequest> findAllByEventIdAndStatus(Integer eventId, RequestStatus Status);
 
-    @Query(value ="SELECT r from requests r  " +
-            "WHERE r.id in ?1" , nativeQuery = true)
+    @Query(value = "SELECT r from requests r  " +
+            "WHERE r.id in ?1", nativeQuery = true)
     List<ParticipationRequest> findRequestsByIds(List<Integer> ids);
 }

@@ -17,7 +17,7 @@ public interface EventRepository extends JpaRepository<Event, Integer> {
     List<Event> findAllByCategory_Id(Integer categoryId);
 
     @Query(value = "SELECT e from events e " +
-            "WHERE e.id in ?1" , nativeQuery = true)
+            "WHERE e.id in ?1", nativeQuery = true)
     List<Event> findEventsByIds(List<Integer> ids);
 
     @Query(value = "SELECT e from events e LIMIT ?6 OFFSET ?7" +
@@ -28,7 +28,7 @@ public interface EventRepository extends JpaRepository<Event, Integer> {
             "AND e.category_id in ?2 " +
             "ODER BY e.views", nativeQuery = true)
     List<Event> findEventsAllFilteredByViews(String text, List<Integer> categories, Boolean paid, LocalDateTime rangeStart,
-                                   LocalDateTime rangeEnd, Integer from, Integer size);
+                                             LocalDateTime rangeEnd, Integer from, Integer size);
 
     @Query(value = "SELECT e from events e LIMIT ?6 OFFSET ?7 " +
             "WHERE (UPPER(e.annotation) LIKE UPPER(CONCAT('%', ?1, '%')) " +
@@ -38,7 +38,7 @@ public interface EventRepository extends JpaRepository<Event, Integer> {
             "AND e.category_id in ?2 " +
             "ODER BY e.event_date", nativeQuery = true)
     List<Event> findEventsAllFilteredByDate(String text, List<Integer> categories, Boolean paid, LocalDateTime rangeStart,
-                                             LocalDateTime rangeEnd, Integer from, Integer size);
+                                            LocalDateTime rangeEnd, Integer from, Integer size);
 
     @Query(value = "SELECT e from events e LIMIT ?5 OFFSET ?6 " +
             "WHERE e.event_date is BETWEEN ?4 AND ?5 " +
@@ -46,5 +46,5 @@ public interface EventRepository extends JpaRepository<Event, Integer> {
             "AND e.state in ?2 " +
             "AND e.category_id in ?3 ", nativeQuery = true)
     List<Event> findEventsALLAdminSearch(List<Integer> userIds, List<String> states, List<Integer> categories,
-                                             LocalDateTime rangeStart, LocalDateTime rangeEnd, Integer from, Integer size);
+                                         LocalDateTime rangeStart, LocalDateTime rangeEnd, Integer from, Integer size);
 }

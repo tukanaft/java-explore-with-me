@@ -1,6 +1,5 @@
 package ru.practicum.controller.pub;
 
-import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -32,7 +31,7 @@ public class PubEventController {
                                                 HttpServletRequest request) {
         log.info("PudEventController выполнение запроса на отправление информации о ивентах по фильтру");
         List<EventFullDto> events = eventService.getEventsFiltered(text, categories, paid, rangeStart, rangeEnd, onlyAvailable, sort, from, size);
-        client.saveStats("ewm-server", request.getRequestURI(), request.getRemoteAddr(),LocalDateTime.now());
+        client.saveStats("ewm-server", request.getRequestURI(), request.getRemoteAddr(), LocalDateTime.now());
         return events;
     }
 
@@ -40,7 +39,7 @@ public class PubEventController {
     public EventFullDto getEventById(@PathVariable Integer id, HttpServletRequest request) {
         log.info("PudEventController выполнение запроса на отправление информации о ивенте");
         EventFullDto event = eventService.getEventById(id);
-        client.saveStats("ewm-server", request.getRequestURI(), request.getRemoteAddr(),LocalDateTime.now());
+        client.saveStats("ewm-server", request.getRequestURI(), request.getRemoteAddr(), LocalDateTime.now());
         return event;
     }
 }

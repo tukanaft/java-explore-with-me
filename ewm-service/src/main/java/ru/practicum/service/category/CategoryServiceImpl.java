@@ -42,7 +42,7 @@ public class CategoryServiceImpl implements CategoryService {
     public void deleteCategory(Integer catId) {
         log.info("CategoryService: удаление категории: {}", catId);
         isCategoryExists(catId);
-        if (eventRepository.findAllByCategory_Id(catId) != null){
+        if (eventRepository.findAllByCategory_Id(catId) != null) {
             throw new ValidationException("есть события имеющие эту категорию");
         }
         categoryRepository.deleteById(catId);
@@ -60,7 +60,7 @@ public class CategoryServiceImpl implements CategoryService {
         return categoryMapper.toCategoryDto(isCategoryExists(catId));
     }
 
-    private Category isCategoryExists(Integer catId){
+    private Category isCategoryExists(Integer catId) {
         return categoryRepository.findById(catId).orElseThrow(()
                 -> new NotFoundException("категории c нет в базе"));
     }

@@ -3,10 +3,6 @@ package ru.practicum.controller.priv;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
-import ru.practicum.dto.event.EventFullDto;
-import ru.practicum.dto.event.EventShortDto;
-import ru.practicum.dto.event.NewEventDto;
-import ru.practicum.dto.event.UpdateEventUserRequest;
 import ru.practicum.dto.participationRequest.ParticipationRequestDto;
 import ru.practicum.service.participationRequest.RequestService;
 

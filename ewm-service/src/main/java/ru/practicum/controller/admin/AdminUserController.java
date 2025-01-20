@@ -26,7 +26,7 @@ public class AdminUserController {
     public List<UserDto> getUsers(@RequestParam List<Integer> ids, @RequestParam(defaultValue = "0") Integer from,
                                   @RequestParam(defaultValue = "10") Integer size) {
         log.info("UserController выполнение запроса на отправление информации о пользователях пользователей");
-        return userService.getUsers(ids, from,size);
+        return userService.getUsers(ids, from, size);
     }
 
     @DeleteMapping("/{userId}")

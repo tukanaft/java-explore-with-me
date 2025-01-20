@@ -20,9 +20,9 @@ public class RequestMapper {
         );
     }
 
-    public List<ParticipationRequestDto> toRequestDtoList(List<ParticipationRequest> requests){
+    public List<ParticipationRequestDto> toRequestDtoList(List<ParticipationRequest> requests) {
         List<ParticipationRequestDto> requestsDto = new ArrayList<>();
-        for (ParticipationRequest request : requests){
+        for (ParticipationRequest request : requests) {
             requestsDto.add(toRequestDto(request));
         }
         return requestsDto;

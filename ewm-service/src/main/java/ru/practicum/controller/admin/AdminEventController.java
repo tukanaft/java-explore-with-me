@@ -27,7 +27,7 @@ public class AdminEventController {
                                                 @RequestParam(defaultValue = "0") Integer from,
                                                 @RequestParam(defaultValue = "10") Integer size) {
         log.info("AdminEventController выполнение запроса на отправление информации о событиях по поиску");
-        return eventService.getEventsBySearch(userIds,states,categories,rangeStart,rangeEnd,from,size);
+        return eventService.getEventsBySearch(userIds, states, categories, rangeStart, rangeEnd, from, size);
     }
 
     @PatchMapping("/{eventId}")

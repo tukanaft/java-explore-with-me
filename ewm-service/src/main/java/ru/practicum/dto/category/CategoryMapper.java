@@ -2,9 +2,7 @@ package ru.practicum.dto.category;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
-import ru.practicum.dto.event.EventShortDto;
 import ru.practicum.model.category.Category;
-import ru.practicum.model.event.Event;
 
 import java.util.ArrayList;
 import java.util.List;

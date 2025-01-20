@@ -37,13 +37,13 @@ public class CompilationServiceImpl implements CompilationService {
     public CompilationDto updateCompilation(Integer compId, UpdateCompilationRequest compilationUpdate) {
         log.info("CompilationService: обновление подборки");
         Compilation compilation = findCompilation(compId);
-        if (compilationUpdate.getEventsId() != null){
+        if (compilationUpdate.getEventsId() != null) {
             compilation.setEvents(eventRepository.findEventsByIds(compilationUpdate.getEventsId()));
         }
-        if (compilationUpdate.getPinned() != null){
+        if (compilationUpdate.getPinned() != null) {
             compilation.setPinned(compilationUpdate.getPinned());
         }
-        if (compilationUpdate.getTitle() != null){
+        if (compilationUpdate.getTitle() != null) {
             compilation.setTitle(compilation.getTitle());
         }
         return compilationMapper.toCompilationDto(compilationRepository.save(compilation));
@@ -68,7 +68,7 @@ public class CompilationServiceImpl implements CompilationService {
         return compilationMapper.toCompilationDto(findCompilation(compId));
     }
 
-    private Compilation findCompilation(Integer compId){
+    private Compilation findCompilation(Integer compId) {
         return compilationRepository.findById(compId).orElseThrow(()
                 -> new NotFoundException("подборки c нет в базе"));
     }

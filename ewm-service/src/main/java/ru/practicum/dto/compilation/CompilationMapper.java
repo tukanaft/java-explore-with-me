@@ -2,10 +2,8 @@ package ru.practicum.dto.compilation;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
-import ru.practicum.dto.category.CategoryDto;
 import ru.practicum.dto.event.EventMapper;
 import ru.practicum.model.Compilation.Compilation;
-import ru.practicum.model.category.Category;
 import ru.practicum.model.event.Event;
 
 import java.util.ArrayList;
@@ -26,7 +24,7 @@ public class CompilationMapper {
         );
     }
 
-    public CompilationDto toCompilationDto(Compilation compilation){
+    public CompilationDto toCompilationDto(Compilation compilation) {
         return new CompilationDto(
                 compilation.getId(),
                 eventMapper.toEventShortDtoList(compilation.getEvents()),
@@ -35,9 +33,9 @@ public class CompilationMapper {
         );
     }
 
-    public  List<CompilationDto> toCompilationDtoList(List<Compilation> compilations){
+    public List<CompilationDto> toCompilationDtoList(List<Compilation> compilations) {
         List<CompilationDto> compilationsDto = new ArrayList<>();
-        for (Compilation compilation : compilations){
+        for (Compilation compilation : compilations) {
             compilationsDto.add(toCompilationDto(compilation));
         }
         return compilationsDto;

@@ -172,7 +172,7 @@ public class EventServiceImpl implements EventService {
         List<ParticipationRequest> rejectedRequests = new ArrayList<>();
         List<ParticipationRequest> requests = requestRepository.findRequestsByIds(statusUpdateRequest.getRequestsId());
         if (statusUpdateRequest.getStatus().equals(UpdateStatus.CONFIRMED)) {
-            if (Objects.equals(event.getConfirmedRequests(), event.getParticipantLimit()) && event.getParticipantLimit() != 0){
+            if (Objects.equals(event.getConfirmedRequests(), event.getParticipantLimit()) && event.getParticipantLimit() != 0) {
                 throw new ValidationException("достигнут лимит подтвержденных заявок на участие");
             }
             for (ParticipationRequest request : requests) {
@@ -211,33 +211,31 @@ public class EventServiceImpl implements EventService {
                                                 LocalDateTime rangeStart, LocalDateTime rangeEnd, Boolean onlyAvailable,
                                                 String sort, Integer from, Integer size) {
         log.info("EventService: отправление информации о событии по фильтрации");
-        switch (sort){
-            case("EVENT_DATE"):
+        switch (sort) {
+            case ("EVENT_DATE"):
                 List<Event> eventsByDate = eventRepository.findEventsAllFilteredByDate(text, categories, paid, rangeStart, rangeEnd, from, size);
-                if (onlyAvailable){
+                if (onlyAvailable) {
                     List<Event> eventsAvailable = new ArrayList<>();
-                    for (Event event : eventsByDate){
-                        if (event.getConfirmedRequests() < event.getParticipantLimit()){
+                    for (Event event : eventsByDate) {
+                        if (event.getConfirmedRequests() < event.getParticipantLimit()) {
                             eventsAvailable.add(event);
                         }
                     }
                     return eventMapper.toEventFullList(eventsAvailable);
-                }
-                else {
+                } else {
                     return eventMapper.toEventFullList(eventsByDate);
                 }
-            case("VIEWS"):
+            case ("VIEWS"):
                 List<Event> eventsByViews = eventRepository.findEventsAllFilteredByViews(text, categories, paid, rangeStart, rangeEnd, from, size);
-                if (onlyAvailable){
+                if (onlyAvailable) {
                     List<Event> eventsAvailable = new ArrayList<>();
-                    for (Event event : eventsByViews){
-                        if (event.getConfirmedRequests() < event.getParticipantLimit()){
+                    for (Event event : eventsByViews) {
+                        if (event.getConfirmedRequests() < event.getParticipantLimit()) {
                             eventsAvailable.add(event);
                         }
                     }
                     return eventMapper.toEventFullList(eventsAvailable);
-                }
-                else {
+                } else {
                     return eventMapper.toEventFullList(eventsByViews);
                 }
         }
@@ -248,7 +246,7 @@ public class EventServiceImpl implements EventService {
     public EventFullDto getEventById(Integer eventId) {
         log.info("EventService: отправление информации о событии по id");
         Event event = getEvent(eventId);
-        if (!(event.getState().equals(State.PUBLISHED))){
+        if (!(event.getState().equals(State.PUBLISHED))) {
             throw new ValidationException("ивент еще не был опубликован");
         }
         return eventMapper.toEventFullDto(event);

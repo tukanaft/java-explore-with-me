@@ -2,16 +2,12 @@ package ru.practicum.dto.event;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
-import ru.practicum.dto.category.CategoryDto;
 import ru.practicum.dto.category.CategoryMapper;
 import ru.practicum.dto.location.LocationMapper;
-import ru.practicum.dto.users.UserDto;
 import ru.practicum.dto.users.UserMapper;
-import ru.practicum.dto.users.UserShortDto;
 import ru.practicum.model.category.Category;
 import ru.practicum.model.event.Event;
 import ru.practicum.model.event.State;
-import ru.practicum.model.location.Location;
 import ru.practicum.model.users.User;
 
 import java.time.LocalDateTime;
@@ -68,7 +64,7 @@ public class EventMapper {
         );
     }
 
-    public List<EventShortDto> toEventShortDtoList(List<Event> events){
+    public List<EventShortDto> toEventShortDtoList(List<Event> events) {
         List<EventShortDto> eventsShortDto = new ArrayList<>();
         for (Event event : events) {
             eventsShortDto.add(new EventShortDto(
@@ -86,9 +82,9 @@ public class EventMapper {
         return eventsShortDto;
     }
 
-    public List<EventFullDto> toEventFullList(List<Event> events){
+    public List<EventFullDto> toEventFullList(List<Event> events) {
         List<EventFullDto> eventsDto = new ArrayList<>();
-        for(Event event : events){
+        for (Event event : events) {
             eventsDto.add(toEventFullDto(event));
         }
         return eventsDto;
