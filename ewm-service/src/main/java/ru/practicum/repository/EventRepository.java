@@ -10,7 +10,8 @@ import java.util.List;
 @org.springframework.stereotype.Repository
 public interface EventRepository extends JpaRepository<Event, Integer> {
 
-    @Query(value = "SELECT e from events e LEFT JOIN users u ON e.initiator_id = u.id LIMIT ?3 OFFSET ?2 ", nativeQuery = true)
+    @Query(value = "SELECT e from events e LEFT JOIN users u ON e.initiator_id = u.id LIMIT ?3 OFFSET ?2 " +
+            "WHERE u.id = ?1", nativeQuery = true)
     List<Event> findAllByInitiator(Integer initiatorId, Integer from, Integer size);
 
     List<Event> findAllByCategory_Id(Integer categoryId);
