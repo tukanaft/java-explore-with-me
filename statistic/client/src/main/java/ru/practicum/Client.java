@@ -19,10 +19,10 @@ public class Client extends BaseClient {
 
 
     @Autowired
-    public Client(@Value("${stat-server.url}") String serverUrl, RestTemplateBuilder builder) {
+    public Client(RestTemplateBuilder builder) {
         super(
                 builder
-                        .uriTemplateHandler(new DefaultUriBuilderFactory(serverUrl))
+                        .uriTemplateHandler(new DefaultUriBuilderFactory("http://localhost:9090"))
                         .requestFactory(() -> new HttpComponentsClientHttpRequestFactory())
                         .build()
         );
