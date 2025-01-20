@@ -29,8 +29,8 @@ public class CompilationServiceImpl implements CompilationService {
     public CompilationDto addCompilation(NewCompilationDto compilationDto) {
         log.info("CompilationService: добавление подборки");
         List<Event> events = eventRepository.findEventsByIds(compilationDto.getEventsId());
-        return compilationMapper.toCompilationDto(compilationRepository.
-                save(compilationMapper.newToCompilation(compilationDto, events)));
+        return compilationMapper.toCompilationDto(compilationRepository
+                .save(compilationMapper.newToCompilation(compilationDto, events)));
     }
 
     @Override

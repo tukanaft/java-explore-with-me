@@ -13,7 +13,7 @@ public interface RequestRepository extends JpaRepository<ParticipationRequest, I
 
     List<ParticipationRequest> findAllByEventId(Integer eventId);
 
-    List<ParticipationRequest> findAllByEventIdAndStatus(Integer eventId, RequestStatus Status);
+    List<ParticipationRequest> findAllByEventIdAndStatus(Integer eventId, RequestStatus status);
 
     @Query(value = "SELECT r from requests r  " +
             "WHERE r.id in ?1", nativeQuery = true)
