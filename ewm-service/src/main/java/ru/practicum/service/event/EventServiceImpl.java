@@ -2,11 +2,14 @@ package ru.practicum.service.event;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 import ru.practicum.dto.category.CategoryMapper;
 import ru.practicum.dto.event.*;
 import ru.practicum.dto.location.LocationMapper;
 import ru.practicum.dto.participationRequest.*;
+import ru.practicum.exception.ConflictExeption;
 import ru.practicum.exception.NotFoundException;
 import ru.practicum.exception.ValidationException;
 import ru.practicum.model.category.Category;
@@ -26,7 +29,7 @@ import java.util.List;
 import java.util.Objects;
 
 @Slf4j
-@org.springframework.stereotype.Service
+@Service
 @Component
 @RequiredArgsConstructor
 public class EventServiceImpl implements EventService {
@@ -43,17 +46,21 @@ public class EventServiceImpl implements EventService {
     @Override
     public EventFullDto addEvent(Integer userId, NewEventDto newEventDto) {
         log.info("EventService: добавление нового события");
-        Category category = categoryRepository.findById(newEventDto.getCategoryId()).orElseThrow(()
-                -> new NotFoundException("категории c нет в базе"));
+        Category category = null;
+        if (newEventDto.getCategoryId() != null) {
+            category = categoryRepository.findById(newEventDto.getCategoryId()).orElseThrow(()
+                    -> new NotFoundException("категории c нет в базе"));
+        }
         User user = validateUser(userId);
-        eventStartValidation(newEventDto.getEventDate());
-        return eventMapper.toEventFullDto(eventRepository.save(eventMapper.toEvent(newEventDto, category, user)));
+        Event event = eventMapper.toEvent(newEventDto, category, user);
+        Event eventValidated = eventValidation(event);
+        return eventMapper.toEventFullDto(eventRepository.save(eventValidated));
     }
 
     @Override
     public List<EventShortDto> getEventsByInitiator(Integer userId, Integer from, Integer size) {
         log.info("EventService: отправление информации о событиях созданных пользователем");
-        return eventMapper.toEventShortDtoList(eventRepository.findAllByInitiator(userId, from, size));
+        return eventMapper.toEventShortDtoList(eventRepository.findAllByInitiator_id(userId, PageRequest.of(from, size)));
     }
 
     @Override
@@ -67,7 +74,7 @@ public class EventServiceImpl implements EventService {
         log.info("EventService: изменение информации о событии созданным пользователем");
         Event event = getEvent(eventId);
         if (event.getState().equals(State.PUBLISHED)) {
-            throw new ValidationException("нельзя менять опубликованные события");
+            throw new ConflictExeption("нельзя менять опубликованные события");
         }
         if (updateRequest.getAnnotation() != null) {
             event.setAnnotation(updateRequest.getAnnotation());
@@ -102,7 +109,8 @@ public class EventServiceImpl implements EventService {
         if (updateRequest.getTitle() != null) {
             event.setTitle(updateRequest.getTitle());
         }
-        return eventMapper.toEventFullDto(eventRepository.save(event));
+        Event eventValidated = eventValidation(event);
+        return eventMapper.toEventFullDto(eventRepository.save(eventValidated));
     }
 
     @Override
@@ -116,7 +124,8 @@ public class EventServiceImpl implements EventService {
             event.setAnnotation(updateRequest.getAnnotation());
         }
         if (updateRequest.getCategory() != null) {
-            event.setCategory(categoryMapper.toCategory(updateRequest.getCategory()));
+            event.setCategory(categoryRepository.findById(updateRequest.getCategory())
+                    .orElseThrow(() -> new NotFoundException("категории нет в базе")));
         }
         if (updateRequest.getDescription() != null) {
             event.setDescription(updateRequest.getDescription());
@@ -137,6 +146,7 @@ public class EventServiceImpl implements EventService {
         if (updateRequest.getState() != null) {
             if (updateRequest.getState().equals(StateActionAdmin.PUBLISH_EVENT)) {
                 event.setState(State.PUBLISHED);
+                event.setPublishedOn(LocalDateTime.now());
             }
             if (updateRequest.getState().equals(StateActionAdmin.REJECT_EVENT)) {
                 event.setState(State.CANCELED);
@@ -145,14 +155,20 @@ public class EventServiceImpl implements EventService {
         if (updateRequest.getTitle() != null) {
             event.setTitle(updateRequest.getTitle());
         }
-        return eventMapper.toEventFullDto(eventRepository.save(event));
+        Event eventValidated = eventValidation(event);
+        return eventMapper.toEventFullDto(eventRepository.save(eventValidated));
     }
 
     @Override
     public List<EventFullDto> getEventsBySearch(List<Integer> userIds, List<String> states, List<Integer> categories,
                                                 LocalDateTime rangeStart, LocalDateTime rangeEnd, Integer from, Integer size) {
         log.info("EventService: отправление информации о событиях по поиску администратора");
-        return eventMapper.toEventFullList(eventRepository.findEventsALLAdminSearch(userIds, states, categories, rangeStart, rangeEnd, from, size));
+        if (rangeStart == null){
+            rangeStart = LocalDateTime.now();
+            rangeEnd = LocalDateTime.now().plusYears(1000);
+        }
+        return eventMapper.toEventFullList(eventRepository.findEventsALLAdminSearch(userIds, states, categories,
+                rangeStart, rangeEnd, PageRequest.of(from, size)));
     }
 
     @Override
@@ -173,7 +189,7 @@ public class EventServiceImpl implements EventService {
         List<ParticipationRequest> requests = requestRepository.findRequestsByIds(statusUpdateRequest.getRequestsId());
         if (statusUpdateRequest.getStatus().equals(UpdateStatus.CONFIRMED)) {
             if (Objects.equals(event.getConfirmedRequests(), event.getParticipantLimit()) && event.getParticipantLimit() != 0) {
-                throw new ValidationException("достигнут лимит подтвержденных заявок на участие");
+                throw new ConflictExeption("достигнут лимит подтвержденных заявок на участие");
             }
             for (ParticipationRequest request : requests) {
                 validateRequestStatus(request);
@@ -213,7 +229,8 @@ public class EventServiceImpl implements EventService {
         log.info("EventService: отправление информации о событии по фильтрации");
         switch (sort) {
             case ("EVENT_DATE"):
-                List<Event> eventsByDate = eventRepository.findEventsAllFilteredByDate(text, categories, paid, rangeStart, rangeEnd, from, size);
+                List<Event> eventsByDate = eventRepository.findEventsAllFilteredByDate(text, categories, paid,
+                        rangeStart, rangeEnd, PageRequest.of(from, size));
                 if (onlyAvailable) {
                     List<Event> eventsAvailable = new ArrayList<>();
                     for (Event event : eventsByDate) {
@@ -226,7 +243,8 @@ public class EventServiceImpl implements EventService {
                     return eventMapper.toEventFullList(eventsByDate);
                 }
             case ("VIEWS"):
-                List<Event> eventsByViews = eventRepository.findEventsAllFilteredByViews(text, categories, paid, rangeStart, rangeEnd, from, size);
+                List<Event> eventsByViews = eventRepository.findEventsAllFilteredByViews(text, categories, paid,
+                        rangeStart, rangeEnd, PageRequest.of(from, size));
                 if (onlyAvailable) {
                     List<Event> eventsAvailable = new ArrayList<>();
                     for (Event event : eventsByViews) {
@@ -238,8 +256,23 @@ public class EventServiceImpl implements EventService {
                 } else {
                     return eventMapper.toEventFullList(eventsByViews);
                 }
+            case null:
+                List<Event> events = eventRepository.findEventsAllNotFiltered(text, categories, paid, rangeStart,
+                        rangeEnd, PageRequest.of(from, size));
+                if (onlyAvailable) {
+                    List<Event> eventsAvailable = new ArrayList<>();
+                    for (Event event : events) {
+                        if (event.getConfirmedRequests() < event.getParticipantLimit()) {
+                            eventsAvailable.add(event);
+                        }
+                    }
+                    return eventMapper.toEventFullList(eventsAvailable);
+                } else {
+                    return eventMapper.toEventFullList(events);
+                }
+            default:
+                throw new IllegalStateException("Unexpected value: " + sort);
         }
-        return List.of();
     }
 
     @Override
@@ -247,7 +280,7 @@ public class EventServiceImpl implements EventService {
         log.info("EventService: отправление информации о событии по id");
         Event event = getEvent(eventId);
         if (!(event.getState().equals(State.PUBLISHED))) {
-            throw new ValidationException("ивент еще не был опубликован");
+            throw new NotFoundException("ивент еще не был опубликован");
         }
         return eventMapper.toEventFullDto(event);
     }
@@ -262,15 +295,41 @@ public class EventServiceImpl implements EventService {
                 -> new NotFoundException("категории c нет в базе"));
     }
 
-    private void eventStartValidation(LocalDateTime eventStart) {
-        if (LocalDateTime.now().plusHours(2).isBefore(eventStart)) {
+    private Event eventValidation(Event event) {
+        if (event.getAnnotation() == null || event.getAnnotation().length() < 20 || event.getAnnotation().length() > 2000) {
+            throw new ValidationException("не корректная аннотация");
+        }
+        if (event.getDescription() == null || event.getDescription().length() < 20 || event.getDescription().length() > 7000) {
+            throw new ValidationException("не корректное описание");
+        }
+        if (event.getPaid() == null) {
+            event.setPaid(false);
+        }
+        if (event.getParticipantLimit() == null) {
+            event.setParticipantLimit(0);
+        }
+        if (event.getRequestModeration() == null) {
+            event.setRequestModeration(true);
+        }
+        if (event.getTitle() == null || event.getTitle().length() < 3 || event.getTitle().length() > 120) {
+            throw new ValidationException("не корректный заголовок");
+        }
+        eventStartValidation(event.getEventDate());
+        if (event.getParticipantLimit() < 0){
+            throw new ValidationException("отрицательный лимит участников");
+        }
+        return event;
+    }
+
+    private void eventStartValidation(LocalDateTime eventStart){
+        if (eventStart == null || LocalDateTime.now().plusHours(2).isAfter(eventStart)) {
             throw new ValidationException("не верно введно время начала события");
         }
     }
 
     private void validateRequestStatus(ParticipationRequest request) {
         if (!(request.getStatus().equals(RequestStatus.PENDING))) {
-            throw new ValidationException("статус заяки не в ожидании");
+            throw new ConflictExeption("статус заяки не в ожидании");
         }
     }
 }

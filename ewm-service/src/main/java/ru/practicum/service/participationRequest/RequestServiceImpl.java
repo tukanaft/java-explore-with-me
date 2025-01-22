@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import ru.practicum.dto.participationRequest.ParticipationRequestDto;
 import ru.practicum.dto.participationRequest.RequestMapper;
+import ru.practicum.exception.ConflictExeption;
 import ru.practicum.exception.NotFoundException;
 import ru.practicum.exception.ValidationException;
 import ru.practicum.model.event.Event;
@@ -36,13 +37,13 @@ public class RequestServiceImpl implements RequestService {
         Event event = eventRepository.findById(eventId).orElseThrow(() -> new NotFoundException("события нет в базе"));
         User user = findUser(userId);
         if (Objects.equals(event.getInitiator().getId(), userId)) {
-            throw new ValidationException("пользователь явлеятся организатором ивента");
+            throw new ConflictExeption("пользователь явлеятся организатором ивента");
         }
         if ((event.getConfirmedRequests() + 1) > event.getParticipantLimit() && event.getParticipantLimit() != 0) {
-            throw new ValidationException("колличество участников достигло максимума");
+            throw new ConflictExeption("колличество участников достигло максимума");
         }
         if (event.getState() != State.PUBLISHED) {
-            throw new ValidationException("событие еще не опубликовано");
+            throw new ConflictExeption("событие еще не опубликовано");
         }
         ParticipationRequest request = new ParticipationRequest(
                 null,

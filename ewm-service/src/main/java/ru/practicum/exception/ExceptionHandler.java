@@ -21,8 +21,14 @@ public class ExceptionHandler {
     }
 
     @org.springframework.web.bind.annotation.ExceptionHandler
-    @ResponseStatus(HttpStatus.CONFLICT)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
     public Map<String, String> validationException(final ValidationException e) {
+        return Map.of("Error", e.getMessage());
+    }
+
+    @org.springframework.web.bind.annotation.ExceptionHandler
+    @ResponseStatus(HttpStatus.CONFLICT)
+    public Map<String, String> conflictException(final ConflictExeption e) {
         return Map.of("Error", e.getMessage());
     }
 }

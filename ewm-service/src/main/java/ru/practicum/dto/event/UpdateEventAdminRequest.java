@@ -16,7 +16,7 @@ public class UpdateEventAdminRequest {
 
     String annotation;
 
-    CategoryDto category;
+    Integer category;
 
     String description;
 

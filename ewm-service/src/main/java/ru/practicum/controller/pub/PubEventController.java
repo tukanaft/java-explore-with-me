@@ -25,7 +25,7 @@ public class PubEventController {
                                                 @RequestParam Boolean paid,
                                                 @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime rangeStart,
                                                 @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime rangeEnd,
-                                                @RequestParam Boolean onlyAvailable, @RequestParam String sort,
+                                                @RequestParam(defaultValue = "false") Boolean onlyAvailable, @RequestParam(required = false) String sort,
                                                 @RequestParam(defaultValue = "0") Integer from,
                                                 @RequestParam(defaultValue = "10") Integer size,
                                                 HttpServletRequest request) {

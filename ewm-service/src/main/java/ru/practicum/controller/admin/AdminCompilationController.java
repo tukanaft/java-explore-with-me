@@ -2,6 +2,7 @@ package ru.practicum.controller.admin;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.dto.compilation.CompilationDto;
 import ru.practicum.dto.compilation.NewCompilationDto;
@@ -16,6 +17,7 @@ public class AdminCompilationController {
     private final CompilationService compilationService;
 
     @PostMapping
+    @ResponseStatus(HttpStatus.CREATED)
     public CompilationDto addCompilation(@RequestBody NewCompilationDto compilationDto) {
         log.info("AdminCompilationController: выполнение запроса на добавление подборки");
         return compilationService.addCompilation(compilationDto);
@@ -29,6 +31,7 @@ public class AdminCompilationController {
     }
 
     @DeleteMapping("/{compId}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteCompilation(@PathVariable Integer compId) {
         log.info("AdminCompilationController: выполнение запроса на удаление подборки: {}", compId);
         compilationService.deleteCompilation(compId);

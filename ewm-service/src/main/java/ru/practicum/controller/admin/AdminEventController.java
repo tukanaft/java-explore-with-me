@@ -19,11 +19,11 @@ public class AdminEventController {
     private final EventService eventService;
 
     @GetMapping
-    public List<EventFullDto> getEventsBySearch(@RequestParam List<Integer> userIds,
-                                                @RequestParam List<String> states,
-                                                @RequestParam List<Integer> categories,
-                                                @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime rangeStart,
-                                                @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime rangeEnd,
+    public List<EventFullDto> getEventsBySearch(@RequestParam(required = false) List<Integer> userIds,
+                                                @RequestParam(required = false) List<String> states,
+                                                @RequestParam(required = false) List<Integer> categories,
+                                                @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime rangeStart,
+                                                @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime rangeEnd,
                                                 @RequestParam(defaultValue = "0") Integer from,
                                                 @RequestParam(defaultValue = "10") Integer size) {
         log.info("AdminEventController выполнение запроса на отправление информации о событиях по поиску");

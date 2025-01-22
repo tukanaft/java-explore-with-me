@@ -12,6 +12,9 @@ import java.util.List;
 public class CategoryMapper {
 
     public CategoryDto toCategoryDto(Category category) {
+        if (category == null){
+            return null;
+        }
         return new CategoryDto(
                 category.getId(),
                 category.getName()

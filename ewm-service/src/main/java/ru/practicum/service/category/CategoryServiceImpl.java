@@ -2,9 +2,12 @@ package ru.practicum.service.category;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Component;
 import ru.practicum.dto.category.CategoryDto;
 import ru.practicum.dto.category.CategoryMapper;
+import ru.practicum.exception.ConflictExeption;
 import ru.practicum.exception.NotFoundException;
 import ru.practicum.exception.ValidationException;
 import ru.practicum.model.category.Category;
@@ -24,18 +27,18 @@ public class CategoryServiceImpl implements CategoryService {
     final CategoryMapper categoryMapper;
 
     @Override
-    public CategoryDto addCategory(String name) {
+    public CategoryDto addCategory(CategoryDto category) {
         log.info("CategoryService: добавление категории");
-        Category category = new Category(null, name);
-        return categoryMapper.toCategoryDto(categoryRepository.save(category));
+        nameValidation(category.getName());
+        return categoryMapper.toCategoryDto(categoryRepository.save(categoryMapper.toCategory(category)));
     }
 
     @Override
-    public CategoryDto updateCategory(Integer catId, String name) {
+    public CategoryDto updateCategory(Integer catId, CategoryDto category) {
         log.info("CategoryService: обновление категории: {}", catId);
         isCategoryExists(catId);
-        Category category = new Category(catId, name);
-        return categoryMapper.toCategoryDto(categoryRepository.save(category));
+        nameValidation(category.getName());
+        return categoryMapper.toCategoryDto(categoryRepository.save(categoryMapper.toCategory(category)));
     }
 
     @Override
@@ -43,7 +46,7 @@ public class CategoryServiceImpl implements CategoryService {
         log.info("CategoryService: удаление категории: {}", catId);
         isCategoryExists(catId);
         if (eventRepository.findAllByCategory_Id(catId) != null) {
-            throw new ValidationException("есть события имеющие эту категорию");
+            throw new ConflictExeption("есть события имеющие эту категорию");
         }
         categoryRepository.deleteById(catId);
     }
@@ -51,7 +54,7 @@ public class CategoryServiceImpl implements CategoryService {
     @Override
     public List<CategoryDto> getCategories(Integer from, Integer size) {
         log.info("CategoryService: отправление данных о категориях");
-        return categoryMapper.toCategoryDtoList(categoryRepository.findAllCat(from, size));
+        return categoryMapper.toCategoryDtoList(categoryRepository.findAll(PageRequest.of(from,size)).toList());
     }
 
     @Override
@@ -63,5 +66,16 @@ public class CategoryServiceImpl implements CategoryService {
     private Category isCategoryExists(Integer catId) {
         return categoryRepository.findById(catId).orElseThrow(()
                 -> new NotFoundException("категории c нет в базе"));
+    }
+
+    private void nameValidation(String name) {
+        if (name == null || name.length() > 50 || name.isBlank()){
+            throw new ValidationException("не корректное имя категории");
+        }
+        for (Category category : categoryRepository.findAll()) {
+            if (category.getName().equals(name)) {
+                throw new ConflictExeption("категория с таким именем уже существует");
+            }
+        }
     }
 }
