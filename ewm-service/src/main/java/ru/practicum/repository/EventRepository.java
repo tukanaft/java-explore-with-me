@@ -44,7 +44,7 @@ public interface EventRepository extends JpaRepository<Event, Integer> {
             "AND e.event_date BETWEEN ?4 AND ?5 " +
             "AND e.category_id in ?2 ", nativeQuery = true)
     List<Event> findEventsAllNotFiltered(String text, List<Integer> categories, Boolean paid, LocalDateTime rangeStart,
-                                            LocalDateTime rangeEnd, Pageable pageable);
+                                         LocalDateTime rangeEnd, Pageable pageable);
 
     @Query("SELECT e from Event e " +
             "WHERE e.eventDate BETWEEN ?4 AND ?5 " +

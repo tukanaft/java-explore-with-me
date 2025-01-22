@@ -61,7 +61,7 @@ public class CompilationServiceImpl implements CompilationService {
     @Override
     public List<CompilationDto> getCompilations(Boolean pinned, Integer from, Integer size) {
         log.info("CompilationService: отправление подборок");
-        return compilationMapper.toCompilationDtoList(compilationRepository.findAllByPinned(pinned, PageRequest.of(from,size)));
+        return compilationMapper.toCompilationDtoList(compilationRepository.findAllByPinned(pinned, PageRequest.of(from, size)));
     }
 
     @Override
@@ -75,11 +75,11 @@ public class CompilationServiceImpl implements CompilationService {
                 -> new NotFoundException("подборки c нет в базе"));
     }
 
-    private Compilation compilationValidation (Compilation compilation){
-        if (compilation.getTitle() == null || compilation.getTitle().length() > 50){
+    private Compilation compilationValidation(Compilation compilation) {
+        if (compilation.getTitle() == null || compilation.getTitle().length() > 50) {
             throw new ValidationException("не коректное название подборки");
         }
-        if (compilation.getPinned() == null){
+        if (compilation.getPinned() == null) {
             compilation.setPinned(false);
         }
         return compilation;

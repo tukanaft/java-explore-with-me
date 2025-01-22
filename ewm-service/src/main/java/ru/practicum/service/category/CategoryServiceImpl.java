@@ -2,7 +2,6 @@ package ru.practicum.service.category;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Component;
 import ru.practicum.dto.category.CategoryDto;
@@ -54,7 +53,7 @@ public class CategoryServiceImpl implements CategoryService {
     @Override
     public List<CategoryDto> getCategories(Integer from, Integer size) {
         log.info("CategoryService: отправление данных о категориях");
-        return categoryMapper.toCategoryDtoList(categoryRepository.findAll(PageRequest.of(from,size)).toList());
+        return categoryMapper.toCategoryDtoList(categoryRepository.findAll(PageRequest.of(from, size)).toList());
     }
 
     @Override
@@ -69,7 +68,7 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     private void nameValidation(String name) {
-        if (name == null || name.length() > 50 || name.isBlank()){
+        if (name == null || name.length() > 50 || name.isBlank()) {
             throw new ValidationException("не корректное имя категории");
         }
         for (Category category : categoryRepository.findAll()) {

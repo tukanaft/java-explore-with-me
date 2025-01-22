@@ -33,7 +33,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public List<UserDto> getUsers(List<Integer> ids, Integer from, Integer size) {
         log.info("userService: отправление информации о пользователях");
-        return userMapper.toUserDtoList(userRepository.findAllByIdIn(ids, PageRequest.of(from,size)));
+        return userMapper.toUserDtoList(userRepository.findAllByIdIn(ids, PageRequest.of(from, size)));
     }
 
     @Override
@@ -43,16 +43,16 @@ public class UserServiceImpl implements UserService {
     }
 
     private void userValidation(NewUserRequest user) {
-        if (user.getName() == null || user.getName().length() < 2 || user.getName().length() > 250 || user.getName().isBlank()){
+        if (user.getName() == null || user.getName().length() < 2 || user.getName().length() > 250 || user.getName().isBlank()) {
             throw new ValidationException("не корректно имя");
         }
-        if (user.getEmail() == null || user.getEmail().length() < 6 || user.getEmail().length() > 254){
+        if (user.getEmail() == null || user.getEmail().length() < 6 || user.getEmail().length() > 254) {
             throw new ValidationException("не корректный имейл");
         }
         if (!user.getEmail().contains("@")) {
             throw new ValidationException("не корректный email");
         }
-        if (user.getEmail().split("@")[0].length() > 64 ) {
+        if (user.getEmail().split("@")[0].length() > 64) {
             throw new ValidationException("не корректный email");
         }
         for (User userToCompare : userRepository.findAll()) {

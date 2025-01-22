@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import ru.practicum.dto.category.CategoryDto;
 import ru.practicum.dto.location.LocationDto;
 
 import java.time.LocalDateTime;

@@ -7,7 +7,6 @@ import ru.practicum.dto.participationRequest.ParticipationRequestDto;
 import ru.practicum.dto.participationRequest.RequestMapper;
 import ru.practicum.exception.ConflictExeption;
 import ru.practicum.exception.NotFoundException;
-import ru.practicum.exception.ValidationException;
 import ru.practicum.model.event.Event;
 import ru.practicum.model.event.State;
 import ru.practicum.model.participationRequest.ParticipationRequest;

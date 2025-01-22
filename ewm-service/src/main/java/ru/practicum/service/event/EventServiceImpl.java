@@ -163,7 +163,7 @@ public class EventServiceImpl implements EventService {
     public List<EventFullDto> getEventsBySearch(List<Integer> userIds, List<String> states, List<Integer> categories,
                                                 LocalDateTime rangeStart, LocalDateTime rangeEnd, Integer from, Integer size) {
         log.info("EventService: отправление информации о событиях по поиску администратора");
-        if (rangeStart == null){
+        if (rangeStart == null) {
             rangeStart = LocalDateTime.now();
             rangeEnd = LocalDateTime.now().plusYears(1000);
         }
@@ -315,13 +315,13 @@ public class EventServiceImpl implements EventService {
             throw new ValidationException("не корректный заголовок");
         }
         eventStartValidation(event.getEventDate());
-        if (event.getParticipantLimit() < 0){
+        if (event.getParticipantLimit() < 0) {
             throw new ValidationException("отрицательный лимит участников");
         }
         return event;
     }
 
-    private void eventStartValidation(LocalDateTime eventStart){
+    private void eventStartValidation(LocalDateTime eventStart) {
         if (eventStart == null || LocalDateTime.now().plusHours(2).isAfter(eventStart)) {
             throw new ValidationException("не верно введно время начала события");
         }
