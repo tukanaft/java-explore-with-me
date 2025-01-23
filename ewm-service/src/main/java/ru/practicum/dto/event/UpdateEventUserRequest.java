@@ -31,7 +31,7 @@ public class UpdateEventUserRequest {
 
     Boolean requestModeration;
 
-    StateActionUser state;
+    StateActionUser stateAction;
 
     String title;
 }

@@ -19,7 +19,7 @@ public class LocationMapper {
         return new Location(
                 id,
                 locationDto.getLat(),
-                locationDto.lon
+                locationDto.getLon()
         );
     }
 }

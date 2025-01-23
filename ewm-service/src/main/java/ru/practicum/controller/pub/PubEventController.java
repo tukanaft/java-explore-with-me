@@ -21,8 +21,9 @@ public class PubEventController {
     private final Client client;
 
     @GetMapping
-    public List<EventFullDto> getEventsFiltered(@RequestParam String text, @RequestParam List<Integer> categories,
-                                                @RequestParam Boolean paid,
+    public List<EventFullDto> getEventsFiltered(@RequestParam(required = false) String text,
+                                                @RequestParam(required = false) List<Integer> categories,
+                                                @RequestParam(required = false) Boolean paid,
                                                 @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime rangeStart,
                                                 @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime rangeEnd,
                                                 @RequestParam(defaultValue = "false") Boolean onlyAvailable, @RequestParam(required = false) String sort,

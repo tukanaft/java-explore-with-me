@@ -64,20 +64,24 @@ public class EventMapper {
         );
     }
 
+    public EventShortDto toEventShortDto(Event event) {
+        return new EventShortDto(
+                event.getId(),
+                event.getAnnotation(),
+                categoryMapper.toCategoryDto(event.getCategory()),
+                event.getConfirmedRequests(),
+                event.getEventDate(),
+                userMapper.toUserShortDto(event.getInitiator()),
+                event.getPaid(),
+                event.getParticipantLimit(),
+                event.getTitle(),
+                event.getViews());
+    }
+
     public List<EventShortDto> toEventShortDtoList(List<Event> events) {
         List<EventShortDto> eventsShortDto = new ArrayList<>();
         for (Event event : events) {
-            eventsShortDto.add(new EventShortDto(
-                    event.getId(),
-                    event.getAnnotation(),
-                    categoryMapper.toCategoryDto(event.getCategory()),
-                    event.getConfirmedRequests(),
-                    event.getEventDate(),
-                    userMapper.toUserShortDto(event.getInitiator()),
-                    event.getPaid(),
-                    event.getParticipantLimit(),
-                    event.getTitle(),
-                    event.getViews()));
+            eventsShortDto.add(toEventShortDto(event));
         }
         return eventsShortDto;
     }

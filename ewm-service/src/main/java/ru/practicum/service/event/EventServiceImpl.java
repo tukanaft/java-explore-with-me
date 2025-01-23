@@ -9,7 +9,7 @@ import ru.practicum.dto.category.CategoryMapper;
 import ru.practicum.dto.event.*;
 import ru.practicum.dto.location.LocationMapper;
 import ru.practicum.dto.participationRequest.*;
-import ru.practicum.exception.ConflictExeption;
+import ru.practicum.exception.ConflictException;
 import ru.practicum.exception.NotFoundException;
 import ru.practicum.exception.ValidationException;
 import ru.practicum.model.category.Category;
@@ -47,8 +47,8 @@ public class EventServiceImpl implements EventService {
     public EventFullDto addEvent(Integer userId, NewEventDto newEventDto) {
         log.info("EventService: добавление нового события");
         Category category = null;
-        if (newEventDto.getCategoryId() != null) {
-            category = categoryRepository.findById(newEventDto.getCategoryId()).orElseThrow(()
+        if (newEventDto.getCategory() != null) {
+            category = categoryRepository.findById(newEventDto.getCategory()).orElseThrow(()
                     -> new NotFoundException("категории c нет в базе"));
         }
         User user = validateUser(userId);
@@ -74,7 +74,7 @@ public class EventServiceImpl implements EventService {
         log.info("EventService: изменение информации о событии созданным пользователем");
         Event event = getEvent(eventId);
         if (event.getState().equals(State.PUBLISHED)) {
-            throw new ConflictExeption("нельзя менять опубликованные события");
+            throw new ConflictException("нельзя менять опубликованные события");
         }
         if (updateRequest.getAnnotation() != null) {
             event.setAnnotation(updateRequest.getAnnotation());
@@ -98,11 +98,11 @@ public class EventServiceImpl implements EventService {
         if (updateRequest.getParticipantLimit() != null) {
             event.setParticipantLimit(updateRequest.getParticipantLimit());
         }
-        if (updateRequest.getState() != null) {
-            if (updateRequest.getState().equals(StateActionUser.SEND_TO_REVIEW)) {
+        if (updateRequest.getStateAction() != null) {
+            if (updateRequest.getStateAction().equals(StateActionUser.SEND_TO_REVIEW)) {
                 event.setState(State.PENDING);
             }
-            if (updateRequest.getState().equals(StateActionUser.CANCEL_REVIEW)) {
+            if (updateRequest.getStateAction().equals(StateActionUser.CANCEL_REVIEW)) {
                 event.setState(State.CANCELED);
             }
         }
@@ -118,7 +118,7 @@ public class EventServiceImpl implements EventService {
         log.info("EventService: изменение информации админом о событии созданным пользователем");
         Event event = getEvent(eventId);
         if (event.getState().equals(State.PUBLISHED)) {
-            throw new ValidationException("нельзя менять опубликованные события");
+            throw new ConflictException("нельзя менять опубликованные события");
         }
         if (updateRequest.getAnnotation() != null) {
             event.setAnnotation(updateRequest.getAnnotation());
@@ -143,12 +143,14 @@ public class EventServiceImpl implements EventService {
         if (updateRequest.getParticipantLimit() != null) {
             event.setParticipantLimit(updateRequest.getParticipantLimit());
         }
-        if (updateRequest.getState() != null) {
-            if (updateRequest.getState().equals(StateActionAdmin.PUBLISH_EVENT)) {
+        if (updateRequest.getStateAction() != null) {
+            if (event.getState().equals(State.CANCELED)) {
+                throw new ConflictException("собфтие отменено");
+            }
+            if (updateRequest.getStateAction().equals(StateActionAdmin.PUBLISH_EVENT)) {
                 event.setState(State.PUBLISHED);
                 event.setPublishedOn(LocalDateTime.now());
-            }
-            if (updateRequest.getState().equals(StateActionAdmin.REJECT_EVENT)) {
+            } else if (updateRequest.getStateAction().equals(StateActionAdmin.REJECT_EVENT)) {
                 event.setState(State.CANCELED);
             }
         }
@@ -176,7 +178,7 @@ public class EventServiceImpl implements EventService {
         log.info("EventService: отправление информации о заявках на участие в событии созданным пользователем");
         validateUser(userId);
         getEvent(eventId);
-        return requestMapper.toRequestDtoList(requestRepository.findAllByEventId(eventId));
+        return requestMapper.toRequestDtoList(requestRepository.findAllByEvent_Id(eventId));
     }
 
     @Override
@@ -186,18 +188,19 @@ public class EventServiceImpl implements EventService {
         Event event = getEvent(eventId);
         List<ParticipationRequest> approvedRequests = new ArrayList<>();
         List<ParticipationRequest> rejectedRequests = new ArrayList<>();
-        List<ParticipationRequest> requests = requestRepository.findRequestsByIds(statusUpdateRequest.getRequestsId());
+        List<ParticipationRequest> requests = requestRepository.findAllByIdIn(statusUpdateRequest.getRequestIds());
         if (statusUpdateRequest.getStatus().equals(UpdateStatus.CONFIRMED)) {
             if (Objects.equals(event.getConfirmedRequests(), event.getParticipantLimit()) && event.getParticipantLimit() != 0) {
-                throw new ConflictExeption("достигнут лимит подтвержденных заявок на участие");
+                throw new ConflictException("достигнут лимит подтвержденных заявок на участие");
             }
             for (ParticipationRequest request : requests) {
                 validateRequestStatus(request);
-                request.setStatus(RequestStatus.APPROVED);
+                request.setStatus(RequestStatus.CONFIRMED);
                 approvedRequests.add(request);
                 event.setConfirmedRequests(event.getConfirmedRequests() + 1);
-                if (Objects.equals(event.getConfirmedRequests(), event.getParticipantLimit())) {
-                    rejectedRequests = requestRepository.findAllByEventIdAndStatus(eventId, RequestStatus.PENDING);
+                if (Objects.equals(event.getConfirmedRequests(), event.getParticipantLimit()) &&
+                        requests.size() != approvedRequests.size()) {
+                    rejectedRequests = requestRepository.findAllByEvent_IdAndStatus(eventId, RequestStatus.PENDING);
                     for (ParticipationRequest rejRequest : rejectedRequests) {
                         rejRequest.setStatus(RequestStatus.REJECTED);
                     }
@@ -227,6 +230,10 @@ public class EventServiceImpl implements EventService {
                                                 LocalDateTime rangeStart, LocalDateTime rangeEnd, Boolean onlyAvailable,
                                                 String sort, Integer from, Integer size) {
         log.info("EventService: отправление информации о событии по фильтрации");
+        if (rangeStart == null) {
+            rangeStart = LocalDateTime.now();
+            rangeEnd = LocalDateTime.now().plusYears(1000);
+        }
         switch (sort) {
             case ("EVENT_DATE"):
                 List<Event> eventsByDate = eventRepository.findEventsAllFilteredByDate(text, categories, paid,
@@ -235,11 +242,15 @@ public class EventServiceImpl implements EventService {
                     List<Event> eventsAvailable = new ArrayList<>();
                     for (Event event : eventsByDate) {
                         if (event.getConfirmedRequests() < event.getParticipantLimit()) {
+                            eventStateValidation(event);
                             eventsAvailable.add(event);
                         }
                     }
                     return eventMapper.toEventFullList(eventsAvailable);
                 } else {
+                    for (Event event : eventsByDate) {
+                        eventStateValidation(event);
+                    }
                     return eventMapper.toEventFullList(eventsByDate);
                 }
             case ("VIEWS"):
@@ -249,11 +260,15 @@ public class EventServiceImpl implements EventService {
                     List<Event> eventsAvailable = new ArrayList<>();
                     for (Event event : eventsByViews) {
                         if (event.getConfirmedRequests() < event.getParticipantLimit()) {
+                            eventStateValidation(event);
                             eventsAvailable.add(event);
                         }
                     }
                     return eventMapper.toEventFullList(eventsAvailable);
                 } else {
+                    for (Event event : eventsByViews) {
+                        eventStateValidation(event);
+                    }
                     return eventMapper.toEventFullList(eventsByViews);
                 }
             case null:
@@ -279,9 +294,10 @@ public class EventServiceImpl implements EventService {
     public EventFullDto getEventById(Integer eventId) {
         log.info("EventService: отправление информации о событии по id");
         Event event = getEvent(eventId);
-        if (!(event.getState().equals(State.PUBLISHED))) {
+        if (event.getState() != State.PUBLISHED) {
             throw new NotFoundException("ивент еще не был опубликован");
         }
+        event.setViews(event.getViews() + 1);
         return eventMapper.toEventFullDto(event);
     }
 
@@ -296,10 +312,13 @@ public class EventServiceImpl implements EventService {
     }
 
     private Event eventValidation(Event event) {
-        if (event.getAnnotation() == null || event.getAnnotation().length() < 20 || event.getAnnotation().length() > 2000) {
+        String annotation = event.getAnnotation();
+        String description = event.getDescription();
+        String title = event.getTitle();
+        if (annotation == null || annotation.length() < 20 || annotation.length() > 2000 || annotation.isBlank()) {
             throw new ValidationException("не корректная аннотация");
         }
-        if (event.getDescription() == null || event.getDescription().length() < 20 || event.getDescription().length() > 7000) {
+        if (description == null || description.length() < 20 || description.length() > 7000 || description.isBlank()) {
             throw new ValidationException("не корректное описание");
         }
         if (event.getPaid() == null) {
@@ -311,7 +330,7 @@ public class EventServiceImpl implements EventService {
         if (event.getRequestModeration() == null) {
             event.setRequestModeration(true);
         }
-        if (event.getTitle() == null || event.getTitle().length() < 3 || event.getTitle().length() > 120) {
+        if (title == null || title.length() < 3 || title.length() > 120 || title.isBlank()) {
             throw new ValidationException("не корректный заголовок");
         }
         eventStartValidation(event.getEventDate());
@@ -329,7 +348,13 @@ public class EventServiceImpl implements EventService {
 
     private void validateRequestStatus(ParticipationRequest request) {
         if (!(request.getStatus().equals(RequestStatus.PENDING))) {
-            throw new ConflictExeption("статус заяки не в ожидании");
+            throw new ConflictException("статус заяки не в ожидании");
+        }
+    }
+
+    private void eventStateValidation(Event event) {
+        if (event.getState() != State.PUBLISHED) {
+            throw new ValidationException("собфтие не опубликованно");
         }
     }
 }

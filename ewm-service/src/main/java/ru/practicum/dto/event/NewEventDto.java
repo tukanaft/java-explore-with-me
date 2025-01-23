@@ -15,7 +15,7 @@ public class NewEventDto {
 
     String annotation;
 
-    Integer categoryId;
+    Integer category;
 
     String description;
 

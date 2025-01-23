@@ -10,7 +10,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class NewCompilationDto {
-    List<Integer> eventsId;
+    List<Integer> events;
     Boolean pinned;
     String title;
 }

@@ -32,7 +32,8 @@ public class AdminEventController {
 
     @PatchMapping("/{eventId}")
     public EventFullDto updateEventByAdmin(@PathVariable Integer eventId, @RequestBody UpdateEventAdminRequest updateRequest) {
-        log.info("PrivEventController выполнение запроса на обновление информации о событии");
-        return eventService.updateEventByAdmin(eventId, updateRequest);
+        log.info("AdminEventController выполнение запроса на обновление информации о событии");
+        EventFullDto event = eventService.updateEventByAdmin(eventId, updateRequest);
+        return event;
     }
 }

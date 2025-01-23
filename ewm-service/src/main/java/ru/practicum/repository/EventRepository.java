@@ -17,32 +17,35 @@ public interface EventRepository extends JpaRepository<Event, Integer> {
 
     List<Event> findAllByIdIn(List<Integer> ids);
 
-    @Query(value = "SELECT e from events e " +
+    @Query("SELECT e from Event e " +
             "WHERE (UPPER(e.annotation) LIKE UPPER(CONCAT('%', ?1, '%'))) " +
-            "OR UPPER(e.description) LIKE UPPER(CONCAT('%', ?1, '%'))) " +
-            "AND e.paid = ?3 " +
-            "AND e.event_date BETWEEN ?4 AND ?5 " +
-            "AND e.category_id in ?2 " +
-            "ODER BY e.views", nativeQuery = true)
+            "OR (UPPER(e.description) LIKE UPPER(CONCAT('%', ?1, '%'))) " +
+            "OR ?1 IS NUll " +
+            "AND (e.paid = ?3 OR ?3 IS NULL)" +
+            "AND e.eventDate BETWEEN ?4 AND ?5 " +
+            "AND (e.category.id in ?2 OR ?2 IS NULL)" +
+            "ORDER BY e.views")
     List<Event> findEventsAllFilteredByViews(String text, List<Integer> categories, Boolean paid, LocalDateTime rangeStart,
                                              LocalDateTime rangeEnd, Pageable pageable);
 
-    @Query(value = "SELECT e from events e " +
+    @Query("SELECT e from Event e " +
             "WHERE (UPPER(e.annotation) LIKE UPPER(CONCAT('%', ?1, '%'))) " +
             "OR (UPPER(e.description) LIKE UPPER(CONCAT('%', ?1, '%'))) " +
-            "AND e.paid = ?3 " +
-            "AND e.event_date BETWEEN ?4 AND ?5 " +
-            "AND e.category_id in ?2 " +
-            "ODER BY e.event_date", nativeQuery = true)
+            "OR ?1 IS NUll " +
+            "AND (e.paid = ?3 OR ?3 IS NULL) " +
+            "AND e.eventDate BETWEEN ?4 AND ?5 " +
+            "AND (e.category.id in ?2 OR ?2 IS NULL) " +
+            "ORDER BY e.eventDate")
     List<Event> findEventsAllFilteredByDate(String text, List<Integer> categories, Boolean paid, LocalDateTime rangeStart,
                                             LocalDateTime rangeEnd, Pageable pageable);
 
-    @Query(value = "SELECT e from events e " +
-            "WHERE (UPPER(e.annotation) LIKE UPPER(CONCAT('%', ?1, '%')) " +
-            "OR UPPER(e.description) LIKE UPPER(CONCAT('%', ?1, '%')))) " +
-            "AND e.paid = ?3 " +
-            "AND e.event_date BETWEEN ?4 AND ?5 " +
-            "AND e.category_id in ?2 ", nativeQuery = true)
+    @Query("SELECT e from Event e " +
+            "WHERE ((UPPER(e.annotation) LIKE UPPER(CONCAT('%', ?1, '%'))) " +
+            "OR (UPPER(e.description) LIKE UPPER(CONCAT('%', ?1, '%')))) " +
+            "OR (?1 IS NUll) " +
+            "AND (e.paid = ?3 OR ?3 IS NULL) " +
+            "AND (e.eventDate BETWEEN ?4 AND ?5) " +
+            "AND (e.category.id in ?2 OR ?2 IS NULL)")
     List<Event> findEventsAllNotFiltered(String text, List<Integer> categories, Boolean paid, LocalDateTime rangeStart,
                                          LocalDateTime rangeEnd, Pageable pageable);
 

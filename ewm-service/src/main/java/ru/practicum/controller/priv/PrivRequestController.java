@@ -2,6 +2,7 @@ package ru.practicum.controller.priv;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.dto.participationRequest.ParticipationRequestDto;
 import ru.practicum.service.participationRequest.RequestService;
@@ -16,6 +17,7 @@ public class PrivRequestController {
     private final RequestService requestService;
 
     @PostMapping
+    @ResponseStatus(HttpStatus.CREATED)
     public ParticipationRequestDto addRequest(@PathVariable Integer userId, @RequestParam Integer eventId) {
         log.info("PrivRequestController выполнение запроса на добавление запроса на участие");
         return requestService.addRequest(userId, eventId);

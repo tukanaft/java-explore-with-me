@@ -16,7 +16,7 @@ public class PubCompilationController {
     private final CompilationService compilationService;
 
     @GetMapping
-    public List<CompilationDto> getCompilations(@RequestParam Boolean pinned,
+    public List<CompilationDto> getCompilations(@RequestParam(defaultValue = "false") Boolean pinned,
                                                 @RequestParam(defaultValue = "0") Integer from,
                                                 @RequestParam(defaultValue = "10") Integer size) {
         log.info("PubCompilationController: выполнение запроса на отправление подборок");
@@ -25,7 +25,7 @@ public class PubCompilationController {
 
     @GetMapping("/{compId}")
     public CompilationDto getCompilation(@PathVariable Integer compId) {
-        log.info("PubCategoryController: выполнение запроса на отправление категории");
+        log.info("PubCompilationController: выполнение запроса на отправление подборки");
         return compilationService.getCompilation(compId);
     }
 }

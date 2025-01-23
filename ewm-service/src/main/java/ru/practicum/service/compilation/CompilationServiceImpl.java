@@ -30,7 +30,7 @@ public class CompilationServiceImpl implements CompilationService {
     @Override
     public CompilationDto addCompilation(NewCompilationDto compilationDto) {
         log.info("CompilationService: добавление подборки");
-        List<Event> events = eventRepository.findAllByIdIn(compilationDto.getEventsId());
+        List<Event> events = eventRepository.findAllByIdIn(compilationDto.getEvents());
         Compilation compilation = compilationValidation(compilationMapper.newToCompilation(compilationDto, events));
         return compilationMapper.toCompilationDto(compilationRepository.save(compilation));
     }
@@ -46,8 +46,9 @@ public class CompilationServiceImpl implements CompilationService {
             compilation.setPinned(compilationUpdate.getPinned());
         }
         if (compilationUpdate.getTitle() != null) {
-            compilation.setTitle(compilation.getTitle());
+            compilation.setTitle(compilationUpdate.getTitle());
         }
+        compilationValidation(compilation);
         return compilationMapper.toCompilationDto(compilationRepository.save(compilation));
     }
 
@@ -76,9 +77,11 @@ public class CompilationServiceImpl implements CompilationService {
     }
 
     private Compilation compilationValidation(Compilation compilation) {
-        if (compilation.getTitle() == null || compilation.getTitle().length() > 50) {
+        String title = compilation.getTitle();
+        if (title == null || title.length() > 50 || title.isBlank()) {
             throw new ValidationException("не коректное название подборки");
         }
+
         if (compilation.getPinned() == null) {
             compilation.setPinned(false);
         }

@@ -30,7 +30,7 @@ public class UpdateEventAdminRequest {
 
     Boolean requestModeration;
 
-    StateActionAdmin state;
+    StateActionAdmin stateAction;
 
     String title;
 }
