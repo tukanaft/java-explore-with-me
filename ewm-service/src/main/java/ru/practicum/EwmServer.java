@@ -9,7 +9,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 @Slf4j
 @RequiredArgsConstructor
 public class EwmServer {
-    static StatServer statServer;
+
     public static void main(String[] args) {
         SpringApplication.run(EwmServer.class, args);
     }
