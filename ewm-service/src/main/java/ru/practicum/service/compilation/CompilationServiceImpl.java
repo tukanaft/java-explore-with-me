@@ -39,8 +39,8 @@ public class CompilationServiceImpl implements CompilationService {
     public CompilationDto updateCompilation(Integer compId, UpdateCompilationRequest compilationUpdate) {
         log.info("CompilationService: обновление подборки");
         Compilation compilation = findCompilation(compId);
-        if (compilationUpdate.getEventsId() != null) {
-            compilation.setEvents(eventRepository.findAllByIdIn(compilationUpdate.getEventsId()));
+        if (compilationUpdate.getEvents() != null) {
+            compilation.setEvents(eventRepository.findAllByIdIn(compilationUpdate.getEvents()));
         }
         if (compilationUpdate.getPinned() != null) {
             compilation.setPinned(compilationUpdate.getPinned());
