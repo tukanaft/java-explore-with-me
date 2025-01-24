@@ -21,7 +21,7 @@ public class Client extends BaseClient {
     public Client(RestTemplateBuilder builder) {
         super(
                 builder
-                        .uriTemplateHandler(new DefaultUriBuilderFactory("http://localhost:9090"))
+                        .uriTemplateHandler(new DefaultUriBuilderFactory("http://stats-server:9090"))
                         .requestFactory(() -> new HttpComponentsClientHttpRequestFactory())
                         .build()
         );
