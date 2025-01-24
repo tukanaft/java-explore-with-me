@@ -238,42 +238,37 @@ public class EventServiceImpl implements EventService {
             case ("EVENT_DATE"):
                 List<Event> eventsByDate = eventRepository.findEventsAllFilteredByDate(text, categories, paid,
                         rangeStart, rangeEnd, PageRequest.of(from, size));
+                eventStateValidation(eventsByDate);
                 if (onlyAvailable) {
                     List<Event> eventsAvailable = new ArrayList<>();
                     for (Event event : eventsByDate) {
                         if (event.getConfirmedRequests() < event.getParticipantLimit()) {
-                            eventStateValidation(event);
                             eventsAvailable.add(event);
                         }
                     }
                     return eventMapper.toEventFullList(eventsAvailable);
                 } else {
-                    for (Event event : eventsByDate) {
-                        eventStateValidation(event);
-                    }
                     return eventMapper.toEventFullList(eventsByDate);
                 }
             case ("VIEWS"):
                 List<Event> eventsByViews = eventRepository.findEventsAllFilteredByViews(text, categories, paid,
                         rangeStart, rangeEnd, PageRequest.of(from, size));
+                eventStateValidation(eventsByViews);
                 if (onlyAvailable) {
                     List<Event> eventsAvailable = new ArrayList<>();
                     for (Event event : eventsByViews) {
                         if (event.getConfirmedRequests() < event.getParticipantLimit()) {
-                            eventStateValidation(event);
                             eventsAvailable.add(event);
                         }
                     }
                     return eventMapper.toEventFullList(eventsAvailable);
                 } else {
-                    for (Event event : eventsByViews) {
-                        eventStateValidation(event);
-                    }
                     return eventMapper.toEventFullList(eventsByViews);
                 }
             case null:
                 List<Event> events = eventRepository.findEventsAllNotFiltered(text, categories, paid, rangeStart,
                         rangeEnd, PageRequest.of(from, size));
+                eventStateValidation(events);
                 if (onlyAvailable) {
                     List<Event> eventsAvailable = new ArrayList<>();
                     for (Event event : events) {
@@ -352,9 +347,11 @@ public class EventServiceImpl implements EventService {
         }
     }
 
-    private void eventStateValidation(Event event) {
-        if (event.getState() != State.PUBLISHED) {
-            throw new ValidationException("собфтие не опубликованно");
+    private void eventStateValidation(List<Event> events) {
+        for (Event event : events) {
+            if (event.getState() != State.PUBLISHED) {
+                throw new ValidationException("собфтие не опубликованно");
+            }
         }
     }
 }
