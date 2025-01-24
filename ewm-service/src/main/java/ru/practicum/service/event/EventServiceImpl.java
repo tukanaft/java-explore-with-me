@@ -230,9 +230,6 @@ public class EventServiceImpl implements EventService {
                                                 LocalDateTime rangeStart, LocalDateTime rangeEnd, Boolean onlyAvailable,
                                                 String sort, Integer from, Integer size) {
         log.info("EventService: отправление информации о событии по фильтрации");
-        if (rangeEnd.isBefore(rangeStart)) {
-            throw new ValidationException("время окончания не может быть раньще начала");
-        }
         if (text.equals("0")) {
             text = null;
         }
@@ -242,6 +239,9 @@ public class EventServiceImpl implements EventService {
         if (rangeStart == null) {
             rangeStart = LocalDateTime.now();
             rangeEnd = LocalDateTime.now().plusYears(1000);
+        }
+        if (rangeEnd.isBefore(rangeStart)) {
+            throw new ValidationException("время окончания не может быть раньше начала");
         }
         switch (sort) {
             case ("EVENT_DATE"):
