@@ -230,12 +230,6 @@ public class EventServiceImpl implements EventService {
                                                 LocalDateTime rangeStart, LocalDateTime rangeEnd, Boolean onlyAvailable,
                                                 String sort, Integer from, Integer size) {
         log.info("EventService: отправление информации о событии по фильтрации");
-        if (text.equals("0")) {
-            text = null;
-        }
-        if (categories.getFirst().equals(0)) {
-            categories = null;
-        }
         if (rangeStart == null) {
             rangeStart = LocalDateTime.now();
             rangeEnd = LocalDateTime.now().plusYears(1000);
