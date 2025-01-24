@@ -230,10 +230,13 @@ public class EventServiceImpl implements EventService {
                                                 LocalDateTime rangeStart, LocalDateTime rangeEnd, Boolean onlyAvailable,
                                                 String sort, Integer from, Integer size) {
         log.info("EventService: отправление информации о событии по фильтрации");
-        if (text.equals("0")){
+        if (rangeEnd.isBefore(rangeStart)) {
+            throw new ValidationException("время окончания не может быть раньще начала");
+        }
+        if (text.equals("0")) {
             text = null;
         }
-        if (categories.getFirst().equals(0)){
+        if (categories.getFirst().equals(0)) {
             categories = null;
         }
         if (rangeStart == null) {
@@ -356,7 +359,7 @@ public class EventServiceImpl implements EventService {
     private void eventStateValidation(List<Event> events) {
         for (Event event : events) {
             if (event.getState() != State.PUBLISHED) {
-                throw new ValidationException("собфтие не опубликованно");
+                throw new ValidationException("событие не опубликованно");
             }
         }
     }
