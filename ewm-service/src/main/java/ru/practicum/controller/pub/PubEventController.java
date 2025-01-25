@@ -9,7 +9,6 @@ import ru.practicum.Client;
 import ru.practicum.dto.event.EventFullDto;
 import ru.practicum.service.event.EventService;
 
-import java.io.UnsupportedEncodingException;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -33,7 +32,7 @@ public class PubEventController {
                                                 HttpServletRequest request) {
         log.info("PudEventController выполнение запроса на отправление информации о ивентах по фильтру");
         List<EventFullDto> events = eventService.getEventsFiltered(text, categories, paid, rangeStart, rangeEnd, onlyAvailable, sort, from, size);
-            client.saveStats("ewm-server", request.getRequestURI(), request.getRemoteAddr());
+        client.saveStats("ewm-server", request.getRequestURI(), request.getRemoteAddr());
         return events;
     }
 
@@ -41,7 +40,7 @@ public class PubEventController {
     public EventFullDto getEventById(@PathVariable Integer id, HttpServletRequest request) {
         log.info("PudEventController выполнение запроса на отправление информации о ивенте");
         EventFullDto event = eventService.getEventById(id);
-            client.saveStats("ewm-server", request.getRequestURI(), request.getRemoteAddr());
+        client.saveStats("ewm-server", request.getRequestURI(), request.getRemoteAddr());
         return event;
     }
 }
