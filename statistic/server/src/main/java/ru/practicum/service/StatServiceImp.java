@@ -17,7 +17,7 @@ import java.util.List;
 @org.springframework.stereotype.Service
 @Component
 @RequiredArgsConstructor
-public class StatStatServiceImp implements StatService {
+public class StatServiceImp implements StatService {
 
     final StatRepository repository;
     final HitMapper hitMapper;
@@ -25,7 +25,7 @@ public class StatStatServiceImp implements StatService {
     @Override
     public List<ViewStatsDto> getStat(LocalDateTime start, LocalDateTime end, List<String> uris, Boolean unique) {
         log.info("StatService: выполнение запроса на отправление статистики");
-        if (end.isBefore(start)){
+        if (end.isBefore(start)) {
             throw new ValidationException("не верные параметры времени");
         }
         List<ViewStatsDto> stats;
