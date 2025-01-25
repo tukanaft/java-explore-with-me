@@ -31,16 +31,16 @@ public class PubEventController {
                                                 @RequestParam(defaultValue = "10") Integer size,
                                                 HttpServletRequest request) {
         log.info("PudEventController выполнение запроса на отправление информации о ивентах по фильтру");
-        List<EventFullDto> events = eventService.getEventsFiltered(text, categories, paid, rangeStart, rangeEnd, onlyAvailable, sort, from, size);
         client.saveStats("ewm-server", request.getRequestURI(), request.getRemoteAddr());
+        List<EventFullDto> events = eventService.getEventsFiltered(text, categories, paid, rangeStart, rangeEnd, onlyAvailable, sort, from, size);
         return events;
     }
 
     @GetMapping("/{id}")
     public EventFullDto getEventById(@PathVariable Integer id, HttpServletRequest request) {
         log.info("PudEventController выполнение запроса на отправление информации о ивенте");
-        EventFullDto event = eventService.getEventById(id);
         client.saveStats("ewm-server", request.getRequestURI(), request.getRemoteAddr());
+        EventFullDto event = eventService.getEventById(id);
         return event;
     }
 }
