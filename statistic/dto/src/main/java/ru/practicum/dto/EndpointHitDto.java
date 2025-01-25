@@ -1,6 +1,7 @@
 package ru.practicum.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -8,6 +9,7 @@ import java.time.LocalDateTime;
 
 @Data
 @NoArgsConstructor
+@Builder
 public class EndpointHitDto {
     Integer id;
     String app;

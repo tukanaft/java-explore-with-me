@@ -4,19 +4,14 @@ import org.springframework.stereotype.Component;
 import ru.practicum.dto.EndpointHitDto;
 import ru.practicum.model.EndpointHit;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
+import java.time.LocalDateTime;
+
 
 @Component
 public class HitMapper {
-
-    public EndpointHitDto toHitDto(EndpointHit endpointHit) {
-        return new EndpointHitDto(
-                endpointHit.getId(),
-                endpointHit.getApp(),
-                endpointHit.getUri(),
-                endpointHit.getIp(),
-                endpointHit.getTimestamp()
-        );
-    }
 
     public EndpointHit toHit(EndpointHitDto endpointHitDto) {
         return new EndpointHit(

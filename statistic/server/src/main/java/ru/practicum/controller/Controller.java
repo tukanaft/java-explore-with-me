@@ -3,6 +3,7 @@ package ru.practicum.controller;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.dto.EndpointHitDto;
@@ -28,6 +29,7 @@ public class Controller {
     }
 
     @PostMapping("/hit")
+    @ResponseStatus(HttpStatus.CREATED)
     public void saveStat(@RequestBody EndpointHitDto hitDto) {
         log.info("StatController выполнение запроса на сохранение статистики");
         statService.saveStat(hitDto);
