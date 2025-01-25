@@ -64,7 +64,7 @@ public class EventMapper {
         );
     }
 
-    public EventShortDto toEventShortDto(Event event){
+    public EventShortDto toEventShortDto(Event event) {
         return new EventShortDto(
                 event.getId(),
                 event.getAnnotation(),
