@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import ru.practicum.dto.EndpointHitDto;
 import ru.practicum.dto.ViewStatsDto;
+import ru.practicum.exception.ValidationException;
 import ru.practicum.mapper.HitMapper;
 import ru.practicum.repository.StatRepository;
 
@@ -16,7 +17,7 @@ import java.util.List;
 @org.springframework.stereotype.Service
 @Component
 @RequiredArgsConstructor
-public class StatStatServiceImp implements StatService {
+public class StatServiceImp implements StatService {
 
     final StatRepository repository;
     final HitMapper hitMapper;
@@ -24,6 +25,9 @@ public class StatStatServiceImp implements StatService {
     @Override
     public List<ViewStatsDto> getStat(LocalDateTime start, LocalDateTime end, List<String> uris, Boolean unique) {
         log.info("StatService: выполнение запроса на отправление статистики");
+        if (end.isBefore(start)) {
+            throw new ValidationException("не верные параметры времени");
+        }
         List<ViewStatsDto> stats;
         if (uris != null && !uris.isEmpty() && unique) {
             stats = repository.findStatsWithUriUnique(start, end, uris);

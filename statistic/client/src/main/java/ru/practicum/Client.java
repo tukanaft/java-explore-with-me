@@ -19,10 +19,10 @@ public class Client extends BaseClient {
 
 
     @Autowired
-    public Client(@Value("${stat-server.url}") String serverUrl, RestTemplateBuilder builder) {
+    public Client(@Value("${stat-server.url}") String statServerUrl, RestTemplateBuilder builder) {
         super(
                 builder
-                        .uriTemplateHandler(new DefaultUriBuilderFactory(serverUrl))
+                        .uriTemplateHandler(new DefaultUriBuilderFactory(statServerUrl))
                         .requestFactory(() -> new HttpComponentsClientHttpRequestFactory())
                         .build()
         );
@@ -39,14 +39,13 @@ public class Client extends BaseClient {
         return get("/stats?start={start}&end={end}&uris={uris}&unique={unique}", parameters);
     }
 
-    public ResponseEntity<Object> saveStats(String app, String uris, String ip, LocalDateTime timeStamp) {
-        EndpointHitDto hitDto = new EndpointHitDto(
-                null,
-                app,
-                uris,
-                ip,
-                timeStamp
-        );
+    public ResponseEntity<Object> saveStats(String app, String uris, String ip) {
+        EndpointHitDto hitDto = EndpointHitDto.builder()
+                .app(app)
+                .uri(uris)
+                .ip(ip)
+                .timestamp(LocalDateTime.now())
+                .build();
         return post("/hit", hitDto);
     }
 }
