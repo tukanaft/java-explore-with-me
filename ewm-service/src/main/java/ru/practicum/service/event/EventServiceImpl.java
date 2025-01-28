@@ -18,10 +18,7 @@ import ru.practicum.model.event.State;
 import ru.practicum.model.participationRequest.ParticipationRequest;
 import ru.practicum.model.participationRequest.RequestStatus;
 import ru.practicum.model.users.User;
-import ru.practicum.repository.CategoryRepository;
-import ru.practicum.repository.EventRepository;
-import ru.practicum.repository.RequestRepository;
-import ru.practicum.repository.UserRepository;
+import ru.practicum.repository.*;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
